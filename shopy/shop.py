@@ -4,20 +4,87 @@
 
 """
 
+import io
+from urllib.parse import urljoin
+import requests
+from lxml import html
+from shopy.shopitem import ShopItem
+from shopy.utils import strip, fst, float_from_str
+
+
+def shop_decoder(obj):
+    if '__type__' in obj and obj['__type__'] == 'Shop':
+        shop = Shop()
+        shop.name = obj['name']
+        shop.url = obj['url']
+        shop.search_url = obj['search_url']
+        shop.search_param = obj['search_param']
+        shop.items = obj['items']
+        return shop
+    return obj
+
 
 class Shop():
     def __init__(self):
-        self.name = ""
+        self.name = None
+        self.url = None
+        self.search_url = None
+        self.search_param = None
 
+    def _xpath(self, name):
+        return name in self.items and 'xpath' in self.items['name']
 
-def from_json(json_dict):
-    def try_get(prop, default=""):
+    @staticmethod
+    def from_json(stream: io.IOBase) -> 'Shop':
+        import json
+        shop = json.load(stream, object_hook=shop_decoder)
+        if not isinstance(shop, Shop):
+            raise ValueError("Json object is not of type 'Shop'")
+        return shop
+
+    def find(self, search_term: str):
+        payload = {self.search_param: search_term}
+        page = requests.get(self.search_url, params=payload)
+        return self.parse(page)
+
+    def parse(self, page):
+        tree = html.fromstring(page.text)
         try:
-            return json_dict[prop]
-        except KeyError:
-            return default
+            container = tree.xpath(self.items['container']['xpath'])
+        except KeyError as e:
+            raise KeyError('items.container.xpath not defined')
 
-    newshop = Shop()
-    newshop.name = try_get("name")
-    newshop.website = try_get("website")
-    return newshop
+        for row in container:
+            item = ShopItem()
+
+            # name
+            if self._xpath('name'):
+                item.name = strip(fst(row.xpath(
+                    self.items['name']['xpath']
+                )))
+
+            # articlenr
+            if self._xpath('articlenr'):
+                item.articlenr = strip(fst(row.xpath(
+                    self.items['articlenr']['xpath']
+                )))
+
+            # price
+            if self._xpath('price'):
+                item.price = float_from_str(strip(fst(row.xpath(
+                    self.items['price']['xpath']
+                ))))
+
+            # url
+            if self._xpath('url'):
+                item.url = strip(fst(row.xpath(self.items['url']['xpath'])))
+                if self.items['url'].get('join') in (not None, True):
+                    item.url =  urljoin(self.url, item.url)
+
+            # images
+            if self._xpath('images'):
+                item.images = row.xpath(self.items['images']['xpath'])
+                if self.items['images'].get('join') in (not None, True):
+                    item.images = [urljoin(self.url, x) for x in item.images]
+
+            yield item
