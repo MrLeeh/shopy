@@ -13,7 +13,7 @@ class ShopItem:
         self.images = []
 
     def __repr__(self):
-        return "<ShopItem object name:'%s', articlenr:'%s', price:%0.2f>" % \
+        return "<ShopItem object name:'%s', articlenr:'%s', price:%s>" % \
                (self.name,
                 self.articlenr,
-                self.price)
+                "%0.2f" % self.price if self.price is not None else None)

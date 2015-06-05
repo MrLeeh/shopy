@@ -4,17 +4,21 @@
 """
 
 
+import os
 import pytest
 from io import StringIO
-from shopy.shop import Shop
 
+import shopy
+from shopy.shop import Shop, shop_path
+from shopy.utils import fst
 
 simple_jsonstream = StringIO('{\n'
                      '  "__type__": "Shop",\n'
                      '  "name": "shop1",\n'
                      '  "url": "http://www.shop1.de",\n'
                      '  "search_url": "http://www.shop1.de/c",\n'
-                     '  "search_param": "searchTerm"\n'
+                     '  "search_param": "searchTerm",\n'
+                     '  "items": {}'
                      '}\n')
 
 
@@ -41,3 +45,7 @@ def test_corruptjson():
                      '}\n')
     with pytest.raises(ValueError) as e:
         Shop.from_json(stream)
+
+def test_shops_directory():
+    directory = shop_path()
+    assert directory == os.path.join(fst(shopy.__path__), 'shops')

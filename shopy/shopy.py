@@ -3,6 +3,13 @@
     
 """
 
+import os
+
+
+def shop_path():
+    return os.path.join(os.path.dirname(__file__), 'shops')
+
+
 class Shopy():
     def __init__(self):
         self.shops = []

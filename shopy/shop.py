@@ -4,11 +4,14 @@
 
 """
 
+import os
 import io
-from urllib.parse import urljoin
 import requests
 from lxml import html
+from urllib.parse import urljoin
+
 from shopy.shopitem import ShopItem
+from shopy.shopy import shop_path
 from shopy.utils import strip, fst, float_from_str
 
 
@@ -40,6 +43,15 @@ class Shop():
         shop = json.load(stream, object_hook=shop_decoder)
         if not isinstance(shop, Shop):
             raise ValueError("Json object is not of type 'Shop'")
+        return shop
+
+    @staticmethod
+    def load(shopname)->'Shop':
+        filename = os.path.join(shop_path(),
+                                shopname if shopname.endswith('.json')
+                                else shopname + '.json')
+        with open(filename, 'r') as f:
+            shop = Shop.from_json(f)
         return shop
 
     def find(self, search_term: str):

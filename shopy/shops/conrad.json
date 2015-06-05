@@ -1,0 +1,15 @@
+{
+  "__type__": "Shop",
+  "name": "Conrad",
+  "url": "http://www.conrad.de",
+  "search_url": "http://www.conrad.de/ce/de/Search.html",
+  "search_param": "search",
+  "items": {
+    "container": {"xpath": ".//div[@class=\"list-product-item teaserClickable\"]"},
+    "name": {"xpath": ".//a[1]/text()"},
+    "articlenr": {"xpath": ".//div[@class=\"bestnr\"]/strong/text()"},
+    "price": {"xpath": ".//span[@class=\"current-price\"]/text()"},
+    "url": {"xpath": ".//a[1]/@href"},
+    "images": {"xpath": ".//img/@src"}
+  }
+}
