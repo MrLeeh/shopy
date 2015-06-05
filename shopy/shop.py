@@ -46,12 +46,23 @@ class Shop():
         return shop
 
     @staticmethod
-    def load(shopname)->'Shop':
-        filename = os.path.join(shop_path(),
-                                shopname if shopname.endswith('.json')
-                                else shopname + '.json')
+    def from_file(shopname)->'Shop':
+
+        # is shopname a valid filename?
+        if os.path.isfile(shopname):
+            filename = shopname
+        else:
+            # look in the common shops directory
+            filename = os.path.join(
+                shop_path(),
+                shopname if shopname.endswith('.json') else shopname + '.json')
+
+            if not os.path.isfile(filename):
+                raise FileNotFoundError()
+
         with open(filename, 'r') as f:
             shop = Shop.from_json(f)
+
         return shop
 
     def find(self, search_term: str):

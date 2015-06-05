@@ -4,7 +4,7 @@
 """
 from shopy.shop import Shop
 
-shop = Shop.load('conrad')
+shop = Shop.from_file('conrad')
 
 for item in shop.find("Batterien AAA 1.5V"):
     print(item, item.url, item.images)
