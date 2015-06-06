@@ -49,3 +49,8 @@ def test_corruptjson():
 def test_shops_directory():
     directory = shop_path()
     assert directory == os.path.join(fst(shopy.__path__), 'shops')
+
+def test_filenotfound():
+    with pytest.raises(FileNotFoundError) as e:
+        Shop.from_file('wrongname')
+    assert 'wrongname.json' in str(e.value)

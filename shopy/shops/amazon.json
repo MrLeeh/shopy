@@ -1,0 +1,18 @@
+{
+  "__type__": "Shop",
+  "name": "Amazon",
+  "url": "http://www.amazon.de",
+  "search_url": "http://www.amazon.de/s/ref=nb_sb_noss_2?",
+  "params": {
+    "__mk_de_DE": "ÅMÅŽÕÑ",
+    "url": "search-alias%3Daps"
+  },
+  "search_param": "field-keywords",
+  "items": {
+    "container": {"xpath": ".//li[@class=\"s-result-item\"]"},
+    "name": {"xpath": ".//h2[contains(@class,\"s-access-title\")]/text()"},
+    "price": {"xpath": ".//span[contains(@class, \"s-price\")]/text()"},
+    "url": {"xpath": ".//a[contains(@class,\"a-link-norma\")]/@href"},
+    "images": {"xpath": ".//img[contains(@class,\"s-access-image\")]/@src"}
+  }
+}

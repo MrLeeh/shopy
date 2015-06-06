@@ -2,9 +2,8 @@
     Copyright 2015 by Stefan Lehmann
     
 """
-import os
-import time
-import threading
+
+
 from threading import Thread
 from queue import Queue
 from shopy.shop import Shop
@@ -23,7 +22,7 @@ class WorkerThread(Thread):
         self.queue.task_done()
 
 
-class Shopy():
+class Shoplist():
     def __init__(self):
         self.shops = []
 
@@ -31,20 +30,17 @@ class Shopy():
         queue = Queue()
         threads = []
         for shop in self.shops:
+            # start thread
             t = WorkerThread(queue, shop, expression)
             threads.append(t)
             t.start()
+            # put in queue
             queue.put((shop, expression))
+
+        # wait for all threads to finish
         queue.join()
 
+        # yield found items
         for thread in threads:
             for item in thread.result:
                 yield item
-
-
-if __name__ == "__main__":
-    o = Shopy()
-    o.shops = [Shop.from_file('conrad'), Shop.from_file('rsonline')]
-
-    for item in o.find('Batterien AAA 1.5V'):
-        print(item)

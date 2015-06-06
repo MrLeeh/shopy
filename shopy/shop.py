@@ -19,6 +19,7 @@ def shop_decoder(obj):
         shop = Shop()
         shop.name = obj['name']
         shop.url = obj['url']
+        shop.params = obj.get('params')
         shop.search_url = obj['search_url']
         shop.search_param = obj['search_param']
         shop.items = obj['items']
@@ -30,6 +31,7 @@ class Shop():
     def __init__(self):
         self.name = None
         self.url = None
+        self.params = None
         self.search_url = None
         self.search_param = None
 
@@ -57,7 +59,7 @@ class Shop():
                 shopname if shopname.endswith('.json') else shopname + '.json')
 
             if not os.path.isfile(filename):
-                raise FileNotFoundError()
+                raise FileNotFoundError(filename)
 
         with open(filename, 'r') as f:
             shop = Shop.from_json(f)
@@ -65,7 +67,8 @@ class Shop():
         return shop
 
     def find(self, search_term: str):
-        payload = {self.search_param: search_term}
+        payload = self.params if self.params is not None else {}
+        payload[self.search_param] = search_term
         page = requests.get(self.search_url, params=payload)
         return self.parse(page)
 
