@@ -2,10 +2,14 @@
     Copyright 2015 by Stefan Lehmann
     
 """
+import os
 
 
 fst = lambda x: x[0]
 strip = lambda x: x.strip()
+
+def shop_path():
+    return os.path.join(os.path.dirname(__file__), 'shops')
 
 
 def float_from_str(string):

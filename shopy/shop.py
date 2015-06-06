@@ -11,8 +11,7 @@ from lxml import html
 from urllib.parse import urljoin
 
 from shopy.shopitem import ShopItem
-from shopy.shopy import shop_path
-from shopy.utils import strip, fst, float_from_str
+from shopy.utils import strip, fst, float_from_str, shop_path
 
 
 def shop_decoder(obj):
@@ -79,7 +78,7 @@ class Shop():
 
         for row in container:
             item = ShopItem()
-
+            item.shop = self
             # name
             if self._xpath('name'):
                 item.name = strip(fst(row.xpath(
