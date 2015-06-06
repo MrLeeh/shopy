@@ -1,0 +1,14 @@
+{
+  "__type__": "Shop",
+  "name": "Ebay",
+  "url": "http://ebay.de",
+  "search_url": "http://www.ebay.de/sch/i.html",
+  "search_param": "_nkw",
+  "items": {
+    "container": {"xpath": ".//li[contains(@class,\"sresult\")]"},
+    "name": {"xpath": ".//a[@class=\"vip\"]/text()"},
+    "price": {"xpath": ".//li[contains(@class,\"lvprice\")]/span/text()[not(contains(.,\"\n\"))]"},
+    "url": {"xpath": ".//a[@class=\"vip\"]/@href"},
+    "images": {"xpath": ".//img[1]/@src"}
+  }
+}

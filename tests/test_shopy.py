@@ -8,10 +8,11 @@ from shopy import Shoplist, Shop
 
 shoplist = Shoplist()
 shoplist.shops = [
-    Shop.from_file('conrad'),
-    Shop.from_file('rsonline'),
-    Shop.from_file('amazon')
+    Shop.from_file('amazon'),
+    Shop.from_file('ebay')
 ]
 
-for item in sorted(shoplist.find('Batterie AAA 1.5V'), key=lambda x: x.price):
-    print(item)
+searchterm = "Bernhard Cornwell Sharpe"
+iterator = sorted(shoplist.find(searchterm), key=lambda x: x.price)
+for item in iterator:
+    print(item.name[:60], "%0.2f" % item.price)
