@@ -4,20 +4,23 @@ Python package for comfortable concurrent article research on multiple shopping 
 
 ### Code Sample
 
-``` python
-    >>> from shopy import Shoplist, Shop
+```python
+>>> from shopy import Shoplist, Shop
+>>> from itertools import islice
 
-    >>> shoplist = Shoplist()
-    >>> shoplist.shops = [Shop.from_file('amazon')]
-    >>> for item in sorted(shoplist.find('Batterie AAA 1.5V'), 
-        key=lambda x: x.price):
-            print(item.name, item.prices)
-    
-    Panasonic LR 03 PAP Alkali Mic 3.15
-	Varta® Batterie (4103) Longlif 3.29
-	Micro-Batterie VARTA LONGLIFE  4.79
-	Panasonic LR 03 PSP Alkali Mic 5.75
-	Batterien Sparpack - 10 Stück  5.90
+>>> shoplist = Shoplist()
+>>> shoplist.shops = [Shop.from_file('amazon')]
+
+>>> iterator = islice(sorted(shoplist.find('Batterie AAA 1.5V'),
+                             key=lambda x: x.price), 5)
+>>> for item in iterator: 
+        print(item.name[:30], "%0.2f" % item.price)
+
+Panasonic LR 03 PAP Alkali Mic 3.15
+Varta® Batterie (4103) Longlif 3.29
+Micro-Batterie VARTA LONGLIFE  4.79
+Panasonic LR 03 PSP Alkali Mic 5.75
+Batterien Sparpack - 10 Stück  5.90
 
 ```
 
