@@ -2,7 +2,7 @@
     Copyright 2015 by Stefan Lehmann
     
 """
-
+from pprint import pprint
 
 from shopy import Shoplist, Shop
 
@@ -15,4 +15,4 @@ shoplist.shops = [
 searchterm = "Bernhard Cornwell Sharpe"
 iterator = sorted(shoplist.find(searchterm), key=lambda x: x.price)
 for item in iterator:
-    print(item.name[:60], "%0.2f" % item.price)
+    pprint((item.name, "%0.2f" % item.price))

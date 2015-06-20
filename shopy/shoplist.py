@@ -1,5 +1,5 @@
 """
-    Copyright 2015 by Stefan Lehmann
+    shoplist.py Copyright 2015 by Stefan Lehmann
     
 """
 

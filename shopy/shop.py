@@ -1,6 +1,5 @@
 """
-    shopy - shop.py
-    Copyright 2015 by Stefan Lehmann
+    shop.py Copyright 2015 by Stefan Lehmann
 
 """
 
@@ -9,9 +8,13 @@ import io
 import requests
 from lxml import html
 from urllib.parse import urljoin
+from requests.exceptions import MissingSchema
 
 from shopy.shopitem import ShopItem
 from shopy.utils import strip, fst, float_from_str, shop_path
+
+
+class InvalidSearchURL(Exception): pass
 
 
 def shop_decoder(obj):
@@ -66,10 +69,13 @@ class Shop():
 
         return shop
 
-    def find(self, search_term: str):
+    def find(self, search_term: str, timeout=10):
         payload = self.params if self.params is not None else {}
         payload[self.search_param] = search_term
-        page = requests.get(self.search_url, params=payload)
+        try:
+            page = requests.get(self.search_url, params=payload, timeout=timeout)
+        except MissingSchema as e:
+            raise InvalidSearchURL('Invalid search url "%s".' % self.search_url) from e
         return self.parse(page)
 
     def parse(self, page):
