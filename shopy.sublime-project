@@ -1,0 +1,29 @@
+{
+	"build_systems":
+	[
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Run shopy",
+			"selector": "source.python",
+			"shell_cmd": "~/Documents/python/venvs/shopy_py3/bin/python -u \"$file\""
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Anaconda Python Builder",
+			"selector": "source.python",
+			"shell_cmd": "~/.pyenv/shims/python -u \"$file\""
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"settings":
+	[
+		{
+			"python_interpreter": "~/Documents/python/venvs/shopy_py3/bin/python"
+		}
+	]
+}

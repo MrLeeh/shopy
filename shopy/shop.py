@@ -6,6 +6,7 @@
 import os
 import io
 import requests
+import logging
 from lxml import html
 from urllib.parse import urljoin
 from requests.exceptions import MissingSchema
@@ -14,7 +15,18 @@ from shopy.shopitem import ShopItem
 from shopy.utils import strip, fst, float_from_str, shop_path
 
 
-class InvalidSearchURL(Exception): pass
+logger = logging.getLogger('shopy.shop')
+
+
+class InvalidSearchURL(Exception):
+    pass
+
+
+def log_parserror(shopname, itemnr, property):
+    logger.debug(
+        "Shop '%s', item %i: Could not parse '%s' property." %
+        (shopname, itemnr, property)
+    )
 
 
 def shop_decoder(obj):
@@ -31,6 +43,7 @@ def shop_decoder(obj):
 
 
 class Shop():
+
     def __init__(self):
         self.name = None
         self.url = None
@@ -73,44 +86,63 @@ class Shop():
         payload = self.params if self.params is not None else {}
         payload[self.search_param] = search_term
         try:
-            page = requests.get(self.search_url, params=payload, timeout=timeout)
+            page = requests.get(
+                self.search_url, params=payload, timeout=timeout)
+            logger.debug(page.url)
         except MissingSchema as e:
-            raise InvalidSearchURL('Invalid search url "%s".' % self.search_url) from e
-        return self.parse(page)
+            raise InvalidSearchURL(
+                'Invalid search url "%s".' % self.search_url) from e
+        return list(self.parse(page))
 
     def parse(self, page):
         tree = html.fromstring(page.text)
         try:
             container = tree.xpath(self.items['container']['xpath'])
-        except KeyError as e:
+        except KeyError:
             raise KeyError('items.container.xpath not defined')
 
-        for row in container:
+        logger.debug("Found {} results".format(len(container)))
+
+        for i, row in enumerate(container):
             item = ShopItem()
             item.shop = self
+
             # name
             if self._xpath('name'):
-                item.name = strip(fst(row.xpath(
-                    self.items['name']['xpath']
-                )))
+                try:
+                    item.name = strip(fst(row.xpath(
+                        self.items['name']['xpath']
+                    )))
+                except IndexError:
+                    log_parserror(self.name, i, 'name')
 
             # articlenr
             if self._xpath('articlenr'):
-                item.articlenr = strip(fst(row.xpath(
-                    self.items['articlenr']['xpath']
-                )))
+                try:
+                    item.articlenr = strip(fst(row.xpath(
+                        self.items['articlenr']['xpath']
+                    )))
+                except IndexError:
+                    log_parserror(self.name, i, 'articlenr')
 
             # price
             if self._xpath('price'):
-                item.price = float_from_str(strip(fst(row.xpath(
-                    self.items['price']['xpath']
-                ))))
+                try:
+                    item.price = float_from_str(strip(fst(row.xpath(
+                        self.items['price']['xpath']
+                    ))))
+                except IndexError:
+                    log_parserror(self.name, i, 'price')
 
             # url
             if self._xpath('url'):
-                item.url = strip(fst(row.xpath(self.items['url']['xpath'])))
-                if self.items['url'].get('join') in (not None, True):
-                    item.url =  urljoin(self.url, item.url)
+                try:
+                    item.url = strip(fst(
+                        row.xpath(self.items['url']['xpath'])))
+                    if self.items['url'].get('join') in (not None, True):
+                        item.url = urljoin(self.url, item.url)
+                except IndexError:
+                    log_parserror(self.name, i, 'url')
 
             # images
             if self._xpath('images'):
@@ -118,4 +150,5 @@ class Shop():
                 if self.items['images'].get('join') in (not None, True):
                     item.images = [urljoin(self.url, x) for x in item.images]
 
-            yield item
+            if None not in (item.name, item.url):
+                yield item

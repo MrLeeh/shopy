@@ -9,7 +9,7 @@
   },
   "search_param": "field-keywords",
   "items": {
-    "container": {"xpath": ".//li[@class=\"s-result-item\"]"},
+    "container": {"xpath": ".//li[contains(@class,\"s-result-item\")]"},
     "name": {"xpath": ".//h2[contains(@class,\"s-access-title\")]/text()"},
     "price": {"xpath": ".//span[contains(@class, \"s-price\")]/text()"},
     "url": {"xpath": ".//a[contains(@class,\"a-link-norma\")]/@href"},

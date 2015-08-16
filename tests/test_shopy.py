@@ -15,4 +15,4 @@ shoplist.shops = [
 searchterm = "Bernhard Cornwell Sharpe"
 iterator = sorted(shoplist.find(searchterm), key=lambda x: x.price)
 for item in iterator:
-    pprint((item.name, "%0.2f" % item.price))
+    pprint((item.name, "%.2f" % item.price))

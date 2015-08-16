@@ -5,6 +5,7 @@ from setuptools.command.test import test as TestCommand
 
 
 class PyTest(TestCommand):
+
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = ['--strict', '--verbose', '--tb=long', 'tests']
@@ -36,6 +37,12 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Libraries :: Python Modules'
+    ],
+    install_requires=[
+        'tabulate',
+        'lxml',
+        'requests',
+        'colorama'
     ],
     platforms='any'
 )
